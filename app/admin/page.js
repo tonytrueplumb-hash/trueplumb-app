@@ -28,7 +28,7 @@ export default async function AdminPage() {
   const learners = P.filter(p => p.role !== "admin");
   const rows = learners.map(p => {
     const pr = (progs || []).find(x => x.user_id === p.id && x.track === p.track);
-    return { p, s: p.track ? summarise(p.track, pr && pr.state) : null, last: pr && pr.updated_at };
+    return { p, s: p.track ? summarise(p.track, pr && pr.state, p.setting || "office") : null, last: pr && pr.updated_at };
   });
   const finished = rows.filter(r => r.s && r.s.daysDone === 3).length;
 
@@ -50,7 +50,7 @@ export default async function AdminPage() {
         </tbody></table></div> : <p className="muted">None yet.</p>}
       </section>
       <section className="card"><h2>People and progress</h2>
-        {rows.length ? <div className="scroll"><table><thead><tr><th>Person</th><th>Course</th><th>Days</th><th>Judgement</th><th>Main trap</th><th>Wants help with</th><th>Last active</th></tr></thead><tbody>
+        {rows.length ? <div className="scroll"><table><thead><tr><th>Person</th><th>Course</th><th>Days</th><th>Judgement</th><th>Main trap</th><th>Follow-through</th><th>Wants help with</th><th>Last active</th></tr></thead><tbody>
           {rows.map(({ p, s, last }) => (
             <tr key={p.id}>
               <td><b>{p.full_name || "–"}</b><br /><span className="muted">{p.email}</span><br /><span className="chip">{p.role}{p.org_id ? " · team" : ""}</span></td>
@@ -58,6 +58,7 @@ export default async function AdminPage() {
               <td className="num">{s ? `${s.daysDone}/3` : "–"}</td>
               <td className="num">{s && s.judgement != null ? s.judgement + "%" : "–"}</td>
               <td>{(s && s.topTrap) || "–"}</td>
+              <td className="num">{s ? `${s.missionsDone}/${s.missions.length} missions` : "–"}{s && s.ratingBefore != null ? <><br /><span className="muted">Self-rating {s.ratingBefore.toFixed(1)} → {s.ratingAfter != null ? s.ratingAfter.toFixed(1) : "–"}{s.rating30 != null ? ` → ${s.rating30.toFixed(1)}` : ""}</span></> : null}</td>
               <td style={{ maxWidth: 260 }}>{p.focus_note || <span className="muted">–</span>}</td>
               <td className="num">{fmt(last)}</td>
             </tr>

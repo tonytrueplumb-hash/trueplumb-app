@@ -15,7 +15,7 @@ export default async function CoursePage() {
   return (
     <>
       <Header profile={profile} />
-      <CoursePlayer userId={user.id} trackId={profile.track} profile={{ name: (profile.full_name || "").split(" ")[0], setting: profile.setting }} initial={row ? row.state : null} />
+      <CoursePlayer userId={user.id} trackId={profile.track} profile={{ name: (profile.full_name || "").split(" ")[0], setting: profile.setting, roleLength: profile.role_length || "", focus: profile.focus_note || "", emailsOptOut: !!profile.emails_opt_out }} initial={row ? row.state : null} />
     </>
   );
 }

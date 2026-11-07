@@ -11,7 +11,11 @@ export default function CoursePlayer({ userId, trackId, profile, initial }) {
       const { error } = await supabase.from("progress").upsert({ user_id: userId, track: trackId, state, updated_at: new Date().toISOString() }, { onConflict: "user_id,track" });
       if (error) throw error;
     };
-    return mountCourse(ref.current, { trackId, profile, initial, onSave, editHref: "/start?edit=1" });
+    const onPref = async ({ emailsOptOut }) => {
+      const { error } = await supabase.from("profiles").update({ emails_opt_out: emailsOptOut }).eq("id", userId);
+      if (error) throw error;
+    };
+    return mountCourse(ref.current, { trackId, profile, initial, onSave, onPref, editHref: "/start?edit=1" });
   }, [userId, trackId, profile, initial]);
   return <div ref={ref} className="stack" style={{ gap: 20 }} aria-live="polite" />;
 }
