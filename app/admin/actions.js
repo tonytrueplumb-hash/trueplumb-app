@@ -25,3 +25,26 @@ export async function addCustomer(_prev, formData) {
   revalidatePath("/admin");
   return { ok: `${email} added as ${kind === "team" ? `a team manager with ${seats} places` : "an individual"}. Their login email is on its way.` };
 }
+
+// Tester invite links: anyone with the link can create a free login, up to a limit.
+export async function createInvite(_prev, formData) {
+  const { profile } = await getSession();
+  if (!profile || profile.role !== "admin") return { error: "Admins only." };
+  const { newInviteCode } = await import("@/lib/invites");
+  const label = String(formData.get("label") || "").trim().slice(0, 60) || "Testers";
+  const maxUses = Math.max(1, Math.min(200, parseInt(formData.get("max_uses"), 10) || 10));
+  const days = Math.max(1, Math.min(90, parseInt(formData.get("days"), 10) || 14));
+  const code = newInviteCode();
+  const { error } = await createAdminClient().from("invite_links").insert({ code, label, max_uses: maxUses, expires_at: new Date(Date.now() + days * 864e5).toISOString() });
+  if (error) { console.error("create invite", error); return { error: "Couldn't create the link. Has the invite-links database update been run?" }; }
+  revalidatePath("/admin");
+  return { ok: "Link created. Copy it from the list below." };
+}
+
+export async function setInviteActive(formData) {
+  const { profile } = await getSession();
+  if (!profile || profile.role !== "admin") return;
+  const code = String(formData.get("code") || "");
+  await createAdminClient().from("invite_links").update({ active: formData.get("active") === "1" }).eq("code", code);
+  revalidatePath("/admin");
+}

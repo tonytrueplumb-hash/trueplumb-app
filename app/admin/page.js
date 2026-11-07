@@ -1,8 +1,10 @@
 import { redirect } from "next/navigation";
 import Header from "@/components/Header";
 import AddCustomer from "./AddCustomer";
+import InviteLinks from "./InviteLinks";
+import { inviteStatus } from "@/lib/invites";
 import { getSession } from "@/lib/supabase/server";
-import { createAdminClient } from "@/lib/supabase/admin";
+import { createAdminClient, siteUrl } from "@/lib/supabase/admin";
 import { COURSES, SETTINGS, summarise } from "@/lib/course";
 
 export const metadata = { title: "Admin · True Plumb" };
@@ -23,6 +25,8 @@ export default async function AdminPage() {
     admin.from("progress").select("user_id, track, state, updated_at"),
     admin.from("org_members").select("org_id")
   ]);
+  const { data: invites } = await admin.from("invite_links").select("*").order("created_at", { ascending: false });
+  const links = (invites || []).map(l => ({ ...l, status: inviteStatus(l) }));
   const P = people || [];
   const revenue = (purchases || []).reduce((n, p) => n + (p.amount_total || 0), 0);
   const learners = P.filter(p => p.role !== "admin");
@@ -42,6 +46,7 @@ export default async function AdminPage() {
         <div className="stat"><span className="muted">Team licences</span><b className="num">{(orgs || []).length}</b></div>
         <div className="stat"><span className="muted">Finished all 3 days</span><b className="num">{finished}</b></div>
       </section>
+      <InviteLinks links={links} site={siteUrl()} />
       <AddCustomer />
       <section className="card"><h2>Team licences</h2>
         {(orgs || []).length ? <div className="scroll"><table><thead><tr><th>Company</th><th>Manager</th><th>Places used</th><th>Since</th></tr></thead><tbody>
@@ -53,7 +58,7 @@ export default async function AdminPage() {
         {rows.length ? <div className="scroll"><table><thead><tr><th>Person</th><th>Course</th><th>Days</th><th>Judgement</th><th>Main trap</th><th>Follow-through</th><th>Wants help with</th><th>Last active</th></tr></thead><tbody>
           {rows.map(({ p, s, last }) => (
             <tr key={p.id}>
-              <td><b>{p.full_name || "–"}</b><br /><span className="muted">{p.email}</span><br /><span className="chip">{p.role}{p.org_id ? " · team" : ""}</span></td>
+              <td><b>{p.full_name || "–"}</b><br /><span className="muted">{p.email}</span><br /><span className="chip">{p.role}{p.org_id ? " · team" : ""}</span>{p.source ? <> <span className="chip o">{p.source}</span></> : null}</td>
               <td>{p.track ? `${COURSES[p.track] ? COURSES[p.track].track : p.track}${p.setting && SETTINGS[p.setting] ? " · " + SETTINGS[p.setting].label : ""}` : <span className="muted">Not set up</span>}{p.role_length ? <><br /><span className="muted">{p.role_length} in role</span></> : null}</td>
               <td className="num">{s ? `${s.daysDone}/3` : "–"}</td>
               <td className="num">{s && s.judgement != null ? s.judgement + "%" : "–"}</td>
