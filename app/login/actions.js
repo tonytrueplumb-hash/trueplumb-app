@@ -13,11 +13,14 @@ export async function sendLoginLink(_prev, formData) {
     } else {
       const { data: prof } = await admin.from("profiles").select("id").eq("email", email).maybeSingle();
       if (prof) {
-        await admin.auth.signInWithOtp({ email, options: { shouldCreateUser: false, emailRedirectTo: `${siteUrl()}/auth/confirm?next=/` } });
+        const { error: otpErr } = await admin.auth.signInWithOtp({ email, options: { shouldCreateUser: false, emailRedirectTo: `${siteUrl()}/auth/confirm?next=/` } });
+        if (otpErr) throw new Error(otpErr.message);
       }
     }
   } catch (e) {
     console.error("login link", e);
+    const msg = String((e && e.message) || "");
+    if (/rate|seconds|too many/i.test(msg)) return { error: "A link was sent very recently. Wait a minute, check your inbox and spam, then try again if it hasn't arrived." };
     return { error: "We couldn't send the email just now. Wait a minute and try again." };
   }
   // Same message either way, so the form doesn't reveal who has an account.
