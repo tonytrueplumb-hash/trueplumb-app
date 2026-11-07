@@ -4,7 +4,7 @@ import AddForm from "./AddForm";
 import { resendInvite } from "./actions";
 import { getSession } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { COURSES, SETTINGS, STYLES, GUIDES, summarise } from "@/lib/course";
+import { COURSES, SETTINGS, STYLES, GUIDES, PURPOSES, summarise } from "@/lib/course";
 import PrintButton from "@/components/PrintButton";
 
 export const metadata = { title: "My team · True Plumb" };
@@ -22,7 +22,7 @@ export default async function TeamPage() {
   const seats = orgs.reduce((n, o) => n + o.seats, 0);
   const { data: members } = await supabase.from("org_members").select("id, email, full_name, user_id, invited_at").eq("org_id", org.id).order("invited_at");
   const ids = (members || []).map(m => m.user_id).filter(Boolean);
-  const { data: profs } = ids.length ? await supabase.from("profiles").select("id, full_name, track, setting").in("id", ids) : { data: [] };
+  const { data: profs } = ids.length ? await supabase.from("profiles").select("id, full_name, track, setting, purpose").in("id", ids) : { data: [] };
   // Read progress with the server key, then reduce it to scores only (notes never leave the server).
   const { data: progs } = ids.length ? await createAdminClient().from("progress").select("user_id, track, state, updated_at").in("user_id", ids) : { data: [] };
 
@@ -101,7 +101,7 @@ export default async function TeamPage() {
             <tbody>{rows.map(({ m, p, s, last }) => (
               <tr key={m.id}>
                 <td><b>{(p && p.full_name) || m.full_name || m.email}</b><br /><span className="muted">{m.email}</span></td>
-                <td>{p && p.track ? `${COURSES[p.track].track}${p.setting && SETTINGS[p.setting] ? " · " + SETTINGS[p.setting].label : ""}` : <span className="muted">Not set up yet</span>}</td>
+                <td>{p && p.track ? `${COURSES[p.track].track}${p.setting && SETTINGS[p.setting] ? " · " + SETTINGS[p.setting].label : ""}` : <span className="muted">Not set up yet</span>}{p && p.purpose ? <><br /><span className="chip">{(PURPOSES.find(x => x.id === p.purpose) || {}).name}</span></> : null}</td>
                 <td className="num">{s ? `${s.daysDone}/3` : "0/3"}</td>
                 <td className="num">{s && s.judgement != null ? s.judgement + "%" : "–"}</td>
                 <td>{(s && s.topTrap) || "–"}</td>

@@ -13,6 +13,7 @@ create table if not exists public.invite_links (
 alter table public.invite_links enable row level security; -- server (service key) only
 
 alter table public.profiles add column if not exists source text;
+alter table public.profiles add column if not exists purpose text; -- new starter, stepping up, refresher or exploring
 
 -- Takes one place on a link, only if it's active, in date and not full. Returns the link, or nothing.
 create or replace function public.claim_invite(p_code text) returns setof public.invite_links

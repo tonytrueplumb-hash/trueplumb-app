@@ -5,7 +5,7 @@ import InviteLinks from "./InviteLinks";
 import { inviteStatus } from "@/lib/invites";
 import { getSession } from "@/lib/supabase/server";
 import { createAdminClient, siteUrl } from "@/lib/supabase/admin";
-import { COURSES, SETTINGS, summarise } from "@/lib/course";
+import { COURSES, SETTINGS, PURPOSES, summarise } from "@/lib/course";
 
 export const metadata = { title: "Admin · True Plumb" };
 export const dynamic = "force-dynamic";
@@ -61,9 +61,9 @@ export default async function AdminPage() {
           {rows.map(({ p, s, last }) => (
             <tr key={p.id}>
               <td><b>{p.full_name || "–"}</b><br /><span className="muted">{p.email}</span><br /><span className="chip">{p.role}{p.org_id ? " · team" : ""}</span>{p.source ? <> <span className="chip o">{p.source}</span></> : null}</td>
-              <td>{p.track ? `${COURSES[p.track] ? COURSES[p.track].track : p.track}${p.setting && SETTINGS[p.setting] ? " · " + SETTINGS[p.setting].label : ""}` : <span className="muted">Not set up</span>}{p.role_length ? <><br /><span className="muted">{p.role_length} in role</span></> : null}</td>
+              <td>{p.track ? `${COURSES[p.track] ? COURSES[p.track].track : p.track}${p.setting && SETTINGS[p.setting] ? " · " + SETTINGS[p.setting].label : ""}` : <span className="muted">Not set up</span>}{p.role_length ? <><br /><span className="muted">{p.role_length} in role</span></> : null}{p.purpose ? <><br /><span className="chip">{(PURPOSES.find(x => x.id === p.purpose) || {}).name}</span></> : null}</td>
               <td className="num">{s ? `${s.daysDone}/3` : "–"}</td>
-              <td className="num">{s && s.judgement != null ? s.judgement + "%" : "–"}</td>
+              <td className="num">{s && s.judgement != null ? s.judgement + "%" : "–"}{s && s.history.length ? <><br /><span className="muted">was {s.history.map(h => h.judgement + "%").join(", ")}</span></> : null}</td>
               <td>{(s && s.topTrap) || "–"}</td>
               <td className="num">{s ? `${s.missionsDone}/${s.missions.length} missions` : "–"}{s && s.ratingBefore != null ? <><br /><span className="muted">Self-rating {s.ratingBefore.toFixed(1)} → {s.ratingAfter != null ? s.ratingAfter.toFixed(1) : "–"}{s.rating30 != null ? ` → ${s.rating30.toFixed(1)}` : ""}</span></> : null}</td>
               <td style={{ maxWidth: 260 }}>{p.focus_note || <span className="muted">–</span>}</td>

@@ -18,11 +18,12 @@ export default async function Home() {
       <Header />
       <section className="stack">
         <p className="eyebrow">True Plumb Academy · Execution Sprint</p>
-        <h1>Three days of real decisions you&apos;ll face this month</h1>
-        <p className="muted">For team leaders and operational managers, in the office, on site or hybrid. About 15 minutes a day on your phone. Every option sounds sensible and each one has a cost. You&apos;ll see what each choice does to your team&apos;s trust, your delivery and your own capacity.</p>
+        <h1>Real decisions, for every level of your business</h1>
+        <p className="muted">Three days, about 15 minutes a day on your phone. Every option sounds sensible and each one has a cost. You&apos;ll see what each choice does to trust, delivery and your own capacity. Six courses, from operatives on site to the boardroom, in the office, on site or hybrid.</p>
       </section>
       <section className="tiles">
-        <div className="card"><h3>Pick your course</h3><p className="muted">Team Leaders or Operational Managers, set to office, site or hybrid work.</p></div>
+        <div className="card"><h3>From day one to the boardroom</h3><p className="muted">General Operatives, Team Leaders, Operational Managers, Directors, Office &amp; Admin and Back Office.</p></div>
+        <div className="card"><h3>Joining, stepping up, staying sharp</h3><p className="muted">A baseline for new starters, preparation before a promotion rather than after, and refreshers that keep good habits going.</p></div>
         <div className="card"><h3>No obvious answers</h3><p className="muted">Four believable options per decision, each ranked and explained after you choose.</p></div>
         <div className="card"><h3>Your leadership profile</h3><p className="muted">See which trap you fall into under pressure, and commit to one real action a day.</p></div>
       </section>

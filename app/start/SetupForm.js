@@ -2,14 +2,16 @@
 import { useActionState, useState } from "react";
 import { saveSetup } from "./actions";
 
-export default function SetupForm({ tracks, settings, roleLengths, profile }) {
+export default function SetupForm({ tracks, settings, roleLengths, purposes, profile }) {
   const [state, action, pending] = useActionState(saveSetup, null);
   const [track, setTrack] = useState(profile.track);
   const [setting, setSetting] = useState(profile.setting);
+  const [purpose, setPurpose] = useState(profile.purpose);
   return (
     <form action={action} className="stack" style={{ gap: 20 }}>
       <input type="hidden" name="track" value={track} />
       <input type="hidden" name="setting" value={setting} />
+      <input type="hidden" name="purpose" value={purpose} />
       <section className="card">
         <h2>1. Your name</h2>
         <label className="f" htmlFor="full_name">First name</label>
@@ -36,7 +38,17 @@ export default function SetupForm({ tracks, settings, roleLengths, profile }) {
         </div>
       </section>
       <section className="card">
-        <h2>4. A bit about you</h2>
+        <h2>4. Why are you doing this course?</h2>
+        <div className="tiles" role="group" aria-label="Reason">
+          {purposes.map(p => (
+            <button type="button" key={p.id} className="tile" aria-pressed={purpose === p.id} onClick={() => setPurpose(purpose === p.id ? "" : p.id)}>
+              <h3>{p.name}</h3><small>{p.d}</small>
+            </button>
+          ))}
+        </div>
+      </section>
+      <section className="card">
+        <h2>5. A bit about you</h2>
         <label className="f" htmlFor="role_length">How long have you been in this role?</label>
         <select id="role_length" name="role_length" defaultValue={profile.role_length}>
           <option value="">Prefer not to say</option>
