@@ -113,3 +113,8 @@ input[type=email]{width:100%;background:var(--ink);color:var(--text);border:1px 
   .card, .callout, .stat { border: 1px solid #ccc !important; background: #fff !important; color: #000 !important; box-shadow: none !important; }
   .muted { color: #444 !important; }
 }
+
+.law{margin-top:12px;border-top:1px solid var(--line);padding-top:10px}
+.law summary{cursor:pointer;font-family:var(--display);font-weight:800;font-size:13px;letter-spacing:1.5px;text-transform:uppercase;color:var(--orange)}
+.law ul{margin:10px 0 6px;padding-left:18px;display:flex;flex-direction:column;gap:8px}
+.law li{line-height:1.45}

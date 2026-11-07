@@ -39,3 +39,7 @@ Import the GitHub repo, add the variables from `.env.example`, deploy. Add the d
 1. **Database:** in Supabase, open SQL Editor, then New query, paste `supabase/migration-002.sql` and press Run.
 2. **Follow-up emails:** in Resend, create a second API key with sending access (name it `netlify-followups`). In Netlify environment variables, add `RESEND_API_KEY` with that value and tick "Contains secret values". The daily job (`netlify/functions/followups.mjs`) runs at 08:00 and does nothing until this key is set.
 3. Course tuning (trap balance, defensible options, site-specific scoring, words to use, Day 3 callback, ratings, guides) lives in `lib/course/tuning.js`.
+
+## v3 · Standards alignment (7 Nov 2026)
+- `lib/course/law.js`: legal and guidance basis per scenario, shown as "The rules behind this". Update `LAW_REVIEWED` whenever it changes.
+- `lib/course/checks.js`: 54 CITB-style knowledge-check questions (3 per day, single answer and "select TWO"). Knowledge % shows on admin and team pages.

@@ -103,7 +103,7 @@ export default async function TeamPage() {
                 <td><b>{(p && p.full_name) || m.full_name || m.email}</b><br /><span className="muted">{m.email}</span></td>
                 <td>{p && p.track ? `${COURSES[p.track].track}${p.setting && SETTINGS[p.setting] ? " · " + SETTINGS[p.setting].label : ""}` : <span className="muted">Not set up yet</span>}{p && p.purpose ? <><br /><span className="chip">{(PURPOSES.find(x => x.id === p.purpose) || {}).name}</span></> : null}</td>
                 <td className="num">{s ? `${s.daysDone}/3` : "0/3"}</td>
-                <td className="num">{s && s.judgement != null ? s.judgement + "%" : "–"}</td>
+                <td className="num">{s && s.judgement != null ? s.judgement + "%" : "–"}{s && s.knowledge != null ? <><br /><span className="muted">knowledge {s.knowledge}%</span></> : null}</td>
                 <td>{(s && s.topTrap) || "–"}</td>
                 <td className="num">{fmt(last)}</td>
                 <td>{!(s && s.answered) && (
