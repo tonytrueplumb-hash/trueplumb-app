@@ -34,6 +34,8 @@ export default async function AdminPage() {
     const pr = (progs || []).find(x => x.user_id === p.id && x.track === p.track);
     return { p, s: p.track ? summarise(p.track, pr && pr.state, p.setting || "office") : null, last: pr && pr.updated_at };
   });
+  const USE_LABEL = { onboarding: "Onboarding", promotion: "Promotions", refresher: "Refreshers", recruitment: "Baseline at joining" };
+  const feedback = (progs || []).filter(x => x.state && x.state.feedback && x.state.feedback.at).map(x => ({ p: P.find(q => q.id === x.user_id) || { id: x.user_id, email: "?" }, f: x.state.feedback, track: x.track })).sort((a, b) => (b.f.at || "").localeCompare(a.f.at || ""));
   const finished = rows.filter(r => r.s && r.s.daysDone === 3).length;
 
   return (
@@ -69,6 +71,20 @@ export default async function AdminPage() {
             </tr>
           ))}
         </tbody></table></div> : <p className="muted">Nobody yet.</p>}
+      </section>
+      <section className="card"><h2>Feedback</h2>
+        {feedback.length ? <div className="scroll"><table><thead><tr><th>Person</th><th>Course</th><th>Recommend</th><th>Most useful</th><th>Would change</th><th>Could use for</th></tr></thead><tbody>
+          {feedback.map(({ p, f, track }) => (
+            <tr key={p.id + track}>
+              <td><b>{p.full_name || "–"}</b><br /><span className="muted">{p.email}</span>{p.source ? <><br /><span className="chip o">{p.source}</span></> : null}</td>
+              <td>{COURSES[track] ? COURSES[track].track : track}</td>
+              <td className="num">{f.score != null ? `${f.score}/10` : "–"}</td>
+              <td style={{ maxWidth: 260 }}>{f.useful || <span className="muted">–</span>}</td>
+              <td style={{ maxWidth: 260 }}>{f.change || <span className="muted">–</span>}</td>
+              <td>{(f.use || []).map(u => USE_LABEL[u] || u).join(", ") || "–"}</td>
+            </tr>
+          ))}
+        </tbody></table></div> : <p className="muted">No feedback yet. People are asked for it when they finish Day 3.</p>}
       </section>
       <section className="card"><h2>Payments</h2>
         {(purchases || []).length ? <div className="scroll"><table><thead><tr><th>Date</th><th>Email</th><th>Type</th><th>Places</th><th>Amount</th></tr></thead><tbody>
