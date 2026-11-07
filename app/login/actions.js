@@ -18,7 +18,8 @@ export async function sendLoginLink(_prev, formData) {
     }
   } catch (e) {
     console.error("login link", e);
-    return { error: "We couldn't send the email just now. Wait a minute and try again." };
+    const detail = adminEmails().includes(email) ? ` (Admin detail: ${e && e.message ? e.message : String(e)})` : "";
+    return { error: "We couldn't send the email just now. Wait a minute and try again." + detail };
   }
   // Same message either way, so the form doesn't reveal who has an account.
   return { sent: true };
